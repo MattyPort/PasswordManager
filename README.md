@@ -1,0 +1,1 @@
+This is a simple command-line password manager written in C. It allows users to securely store and manage their passwords for various websites or services. The passwords are encrypted using a master password and an encryption key, providing an additional layer of security.
