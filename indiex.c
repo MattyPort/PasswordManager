@@ -487,7 +487,6 @@ int main() {
         printf("╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╭━╯┃\n");
         printf("╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱/╰━━╯\n\n");
 
-
         printf("Welcome! It seems you're a new user.\n");
         printf("[1] About\n");
         printf("[2] Set up Master Password\n");
@@ -518,7 +517,8 @@ int main() {
                     return 0;
                 } else {
                     printf("Invalid choice. Going back to the main menu.\n");
-                    break;
+                     main(); // Go back to the main menu
+                    return 0;
                 }
             case 2:
                 printf("\nEnter your master password: ");
@@ -527,13 +527,16 @@ int main() {
                 getPasswordInput(retypePassword, MAX_PASSWORD_LENGTH);
                 if (strcmp(masterPassword, retypePassword) != 0) {
                     printf("\nPasswords do not match. Please try again.\n");
-                    break;
+                    main();
+                    return 0;
                 }
                 saveMasterPassword(masterPassword, encryptionKey); // Save master password encrypted with the key
                 printf("\nMaster password set successfully.\n");
                 break;
             default:
                 printf("Invalid choice. Please try again.\n");
+                main(); // Go back to the main menu
+                return 0;
         }
     }
 
@@ -589,4 +592,5 @@ int main() {
 
     return 0;
 }
+
 
