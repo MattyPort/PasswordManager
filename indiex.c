@@ -3,23 +3,26 @@
 #include <string.h>
 #include <stdbool.h>
 #include <time.h>
-#include <regex.h>
-#include <unistd.h> // for sleep function
-#include <termios.h> 
+#include <regex.h> 
+#include <unistd.h>  // for sleep function 
+#include <termios.h> // hide password
 
 #define MAX_PASSWORD_LENGTH 50
 #define FILENAME "passwords.txt"
 #define MASTER_PASSWORD_FILE "master_password.txt"
 #define KEY_FILE "encryption_key.txt"
-#define MAX_LOGIN_ATTEMPTS 3
+#define MAX_LOGIN_ATTEMPTS 3 
 #define LOCKOUT_TIME 60 // seconds
+#define CLEAR_SCREEN       "\x1b[2J\x1b[1;1H"
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
 
 int loginAttempts = 0;
 
 // Define a structure for password entry
 typedef struct {
     char *username;
-    char *encryptedPassword;
+    char *encryptedPassword; 
     char *website;
 } PasswordEntry;
 
@@ -111,16 +114,16 @@ int authenticateMasterPassword(const char *masterPassword) {
     printf("Enter master password: ");
     getPasswordInput(enteredPassword, MAX_PASSWORD_LENGTH);
     if (strcmp(enteredPassword, masterPassword) == 0) {
-        loginAttempts = 0; // Reset login attempts on successful login
+        loginAttempts = 0; // reset login attempts on  login
         return 1;
     } else {
         loginAttempts++;
         if (loginAttempts >= MAX_LOGIN_ATTEMPTS) {
-            printf("Too many failed attempts. Account locked. Please try again after %d seconds.\n", LOCKOUT_TIME);
+            printf(ANSI_COLOR_RED "Too many failed attempts. Account locked. Please try again after %d seconds.\n" ANSI_COLOR_RESET, LOCKOUT_TIME);
             sleep(LOCKOUT_TIME);
             loginAttempts = 0; // Reset login attempts after lockout
         } else {
-            printf("Incorrect password. You have %d attempts left.\n", MAX_LOGIN_ATTEMPTS - loginAttempts);
+            printf(ANSI_COLOR_RED "Incorrect password. You have %d attempts left.\n" ANSI_COLOR_RESET, MAX_LOGIN_ATTEMPTS - loginAttempts);
         }
         return 0;
     }
@@ -156,7 +159,7 @@ void saveKeyToFile(const char *key) {
         fprintf(file, "%s", key);
         fclose(file);
     } else {
-        printf("Error: Could not save encryption key.\n");
+        printf( ANSI_COLOR_RED"Error: Could not save encryption key.\n" ANSI_COLOR_RESET);
         exit(1);
     }
 }
@@ -222,7 +225,7 @@ void addPassword(const char *key) {
     passwords[numPasswords].username = malloc(MAX_PASSWORD_LENGTH * sizeof(char));
     passwords[numPasswords].encryptedPassword = malloc(MAX_PASSWORD_LENGTH * sizeof(char));
     passwords[numPasswords].website = malloc(MAX_PASSWORD_LENGTH * sizeof(char));
-
+    
     printf("Enter username: ");
     scanf("%s", input);
     if (strlen(input) == 0) {
@@ -455,7 +458,7 @@ void changeMasterPassword(char *masterPassword, const char *key) {
 
     strcpy(masterPassword, newMasterPassword);
     saveMasterPassword(masterPassword, key); 
-    printf("Master password changed successfully.\n");
+    printf("\nMaster password changed successfully.\n");
 }
 
 bool isSetupRequired() {
@@ -468,6 +471,11 @@ bool isSetupRequired() {
     return false;
 }
 
+
+void clearScreen() {
+    printf(CLEAR_SCREEN);
+}
+
 int main() {
     char masterPassword[MAX_PASSWORD_LENGTH];
     char encryptionKey[MAX_PASSWORD_LENGTH];
@@ -476,8 +484,9 @@ int main() {
     loadKeyFromFile(encryptionKey); // Load or generate encryption key
 
     loadMasterPassword(masterPassword, encryptionKey); // Load master password
-
+   
     if (isSetupRequired()) {
+         clearScreen();
       printf("\n╭━━━╮╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱/╭╮╭━╮╭━╮\n");
         printf("┃╭━╮┃╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱/┃┃┃┃╰╯┃┃\n");
         printf("┃╰━╯┣━━┳━━┳━━┳╮╭╮╭┳━━┳━┳━╯┃┃╭╮╭╮┣━━┳━╮╭━━┳━━┳━━┳━╮\n");
@@ -545,7 +554,7 @@ int main() {
     int choice;
 
     do {
-        printf("\n[1] Add Password\n[2] View Passwords\n[3] Edit Password\n[4] Delete Password\n[5] Change Master Password\n[6] Exit\n");
+        printf("\n  [1] Add Password\n  [2] View Passwords\n  [3] Edit Password\n  [4] Delete Password\n  [5] Change Master Password\n  [6] Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
@@ -592,5 +601,3 @@ int main() {
 
     return 0;
 }
-
-
