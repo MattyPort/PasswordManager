@@ -486,20 +486,55 @@ int main() {
         printf("╰╯╱╱╰╯╰┻━━┻━━╯╰╯╰╯╰━━┻╯╰━━╯╰╯╰╯╰┻╯╰┻╯╰┻╯╰┻━╮┣━━┻╯\n");
         printf("╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╭━╯┃\n");
         printf("╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱/╰━━╯\n\n");
-        printf("\nWelcome! It seems you're a new user.\n");
-        printf("Let's set up a master password.\n");
-        do {
-            printf("Enter your master password: ");
-            getPasswordInput(masterPassword, MAX_PASSWORD_LENGTH);
-            printf("\nRetype your master password: ");
-            getPasswordInput(retypePassword, MAX_PASSWORD_LENGTH);
-            if (strcmp(masterPassword, retypePassword) != 0) {
-                printf("\nPasswords do not match. Please try again.\n");
-            }
-        } while (strcmp(masterPassword, retypePassword) != 0);
 
-        saveMasterPassword(masterPassword, encryptionKey); // Save master password encrypted with the key
-        printf("\nMaster password set successfully.\n");
+
+        printf("Welcome! It seems you're a new user.\n");
+        printf("[1] About\n");
+        printf("[2] Set up Master Password\n");
+
+        int setupChoice;
+        printf("Enter your choice: ");
+        scanf("%d", &setupChoice);
+        while (getchar() != '\n'); // Clear input buffer
+
+        switch (setupChoice) {
+            case 1:
+                printf("\nThis is a simple password manager program written in C.\n");
+                printf("It allows you to store and manage your passwords securely.\n\n");
+                printf("Frequently Asked Questions (FAQs):\n");
+                printf("1. What is a master password?\n");
+                printf("   A master password is a single password that you use to access all of the passwords stored in this program. It's like the key to a safe containing all your passwords.\n\n");
+                printf("2. How does the encryption work?\n");
+                printf("   The program encrypts your passwords using a key. When you enter a password, it gets encrypted using the key before being stored. When you retrieve a password, it gets decrypted using the same key.\n\n");
+                printf("3. What if I forget my master password?\n");
+                printf("   Unfortunately, if you forget your master password, there's no way to recover it. You'll lose access to all the passwords stored in this program. Make sure to remember your master password or keep it in a safe place.\n\n");
+                printf("[1] Go back\n");
+                int aboutChoice;
+                printf("Enter your choice: ");
+                scanf("%d", &aboutChoice);
+                while (getchar() != '\n'); // Clear input buffer
+                if (aboutChoice == 1) {
+                    main(); // Go back to the main menu
+                    return 0;
+                } else {
+                    printf("Invalid choice. Going back to the main menu.\n");
+                    break;
+                }
+            case 2:
+                printf("\nEnter your master password: ");
+                getPasswordInput(masterPassword, MAX_PASSWORD_LENGTH);
+                printf("\nRetype your master password: ");
+                getPasswordInput(retypePassword, MAX_PASSWORD_LENGTH);
+                if (strcmp(masterPassword, retypePassword) != 0) {
+                    printf("\nPasswords do not match. Please try again.\n");
+                    break;
+                }
+                saveMasterPassword(masterPassword, encryptionKey); // Save master password encrypted with the key
+                printf("\nMaster password set successfully.\n");
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
     }
 
     loadPasswords(encryptionKey); // Load passwords from file when the program starts
@@ -554,3 +589,4 @@ int main() {
 
     return 0;
 }
+
